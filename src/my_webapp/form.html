@@ -1,9 +1,11 @@
-"Hello {{id}}!"
-
 <form action="/form/{{id}}/register" method="post">
     <label for="name">Namn:</label><br>
     <input type="text" id="name" name="name" value="Oscar Blomqvist"><br>
     <label for="email">Epost:</label><br>
     <input type="text" id="email" name="email" value="oscar.blomqvist2004@gmail.com"><br><br>
     <input type="submit" value="Skicka">
-  </form> 
+  </form>
+
+{% for name in registered %}
+  {{name}}
+{% endfor %}

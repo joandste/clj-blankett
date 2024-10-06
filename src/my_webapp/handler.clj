@@ -7,9 +7,11 @@
 
 (def forms '(1 2 69 73))
 
+(def registered '("Oscar Blomqvist" "Kaur Udso" "Jonathan"))
+
 (defroutes app-routes
   (GET "/" [] (parser/render-file "index.html" {:forms forms}))
-  (GET "/form/:id" [id] (parser/render-file "form.html" {:id id}))
+  (GET "/form/:id" [id] (parser/render-file "form.html" {:id id :registered registered}))
   (POST "/form/:id/register" {params :params} (str params))
   (route/not-found "Not Found"))
 
