@@ -5,16 +5,17 @@
             [ring.adapter.jetty :as jetty]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
 
-(defroutes app-routes 
-  (GET "/" [] "Hello List")
-  (GET "/form/:id" [id] (str "Hello Form @" id))
+(def forms '(1 2 69 73))
+
+(defroutes app-routes
+  (GET "/" [] (parser/render-file "index.html" {:forms forms}))
+  (GET "/form/:id" [id] (parser/render-file "form.html" {:id id}))
   (POST "/form/:id/register" {params :params} (str params))
-  (GET "/test" [] (parser/render "Hello {{name}}!" {:name "Test"}))
   (route/not-found "Not Found"))
 
 (def app
   ;; use #' prefix for REPL-friendly code
-  (wrap-defaults #'app-routes site-defaults))
+  (wrap-defaults #'app-routes (assoc-in site-defaults [:security :anti-forgery] false)))
 
 (defn -main []
   (jetty/run-jetty #'app {:port 3000}))
@@ -24,4 +25,6 @@
   ;; :join? false runs the web server in the background!
   (def server (jetty/run-jetty #'app {:port 3000 :join? false}))
   ;; evaluate this form to stop the webapp via the the REPL:
-  (.stop server))
+  (.stop server)
+  ;; template path:
+  (selmer.parser/set-resource-path! "/home/user/clj-blankett/src/my_webapp"))

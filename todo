@@ -1,0 +1,5 @@
+add database connection
+add way to register users to forms
+add way to add new forms
+make frontend prettier
+consider client side rendering with clojurescript
