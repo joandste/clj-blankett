@@ -3,21 +3,22 @@
             [compojure.route :as route]
             [selmer.parser :as parser]
             [ring.adapter.jetty :as jetty]
-            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
+            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
+            [ring.util.anti-forgery :as util]))
 
-(def forms '(1 2 69 73))
+(def forms '(73 69 54 23))
 
-(def registered '("Oscar Blomqvist" "Kaur Udso" "Jonathan"))
+(def registered [])
 
 (defroutes app-routes
   (GET "/" [] (parser/render-file "index.html" {:forms forms}))
-  (GET "/form/:id" [id] (parser/render-file "form.html" {:id id :registered registered}))
-  (POST "/form/:id/register" {params :params} (str params))
+  (GET "/form/:id" [id] (parser/render-file "form.html" {:id id :registered registered :token (util/anti-forgery-field)}))
+  (POST "/form/:id/register" {params :params} (def registered (conj registered (params :name))) "success")
   (route/not-found "Not Found"))
 
 (def app
   ;; use #' prefix for REPL-friendly code
-  (wrap-defaults #'app-routes (assoc-in site-defaults [:security :anti-forgery] false)))
+  (wrap-defaults #'app-routes site-defaults))
 
 (defn -main []
   (jetty/run-jetty #'app {:port 3000}))
