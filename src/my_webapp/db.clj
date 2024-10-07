@@ -44,19 +44,23 @@
   [name]
   (sql/insert! db-spec :forms {:name name}))
 
-(defn get-forms
+(defn get-all-forms
   []
   (sql/query db-spec ["select name, id from forms"] {:builder-fn rs/as-unqualified-lower-maps}))
+
+(defn get-form
+  [form]
+  (sql/query db-spec ["select name, from forms where id = ?" form] {:builder-fn rs/as-unqualified-lower-maps}))
 
 (comment 
   (create-form-table)
   (add-form "snopp")
-  (get-forms)
+  (not-empty (get-form 19))
   (create-registered-table)
   (get-registed 69)
   (add-registered 69 "Oscar" "oscar@abo.fi")
   (get-registed-names 69)
   (get-all-registed)
 
-  (map #(get % :name) (get-forms))
+  (map #(get % :name) (get-all-forms))
   )
