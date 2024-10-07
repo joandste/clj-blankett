@@ -4,7 +4,8 @@
             [selmer.parser :as parser]
             [ring.adapter.jetty :as jetty]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
-            [ring.util.anti-forgery :as util]))
+            [ring.util.anti-forgery :as util]
+            [my-webapp.db :as db]))
 
 (def forms '(73 69 54 23))
 
@@ -13,7 +14,7 @@
 (defroutes app-routes
   (GET "/" [] (parser/render-file "index.html" {:forms forms}))
   (GET "/form/:id" [id] (parser/render-file "form.html" {:id id :registered registered :token (util/anti-forgery-field)}))
-  (POST "/form/:id/register" {params :params} (def registered (conj registered (params :name))) "success")
+  (POST "/form/:id/register" {params :params} (def registered (conj registered (params :name))) (parser/render-file "success.html" {:id (params :id)}))
   (route/not-found "Not Found"))
 
 (def app
