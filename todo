@@ -1,5 +1,5 @@
-add database connection
-add way to register users to forms
-add way to add new forms
 make frontend prettier
+add gui to add new form
+validate that user registers to real form
+add timed forms
 consider client side rendering with clojurescript

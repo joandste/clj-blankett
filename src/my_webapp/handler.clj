@@ -7,14 +7,16 @@
             [ring.util.anti-forgery :as util]
             [my-webapp.db :as db]))
 
-(def forms '(73 69 54 23))
-
-(def registered [])
-
 (defroutes app-routes
-  (GET "/" [] (parser/render-file "index.html" {:forms forms}))
-  (GET "/form/:id" [id] (parser/render-file "form.html" {:id id :registered registered :token (util/anti-forgery-field)}))
-  (POST "/form/:id/register" {params :params} (def registered (conj registered (params :name))) (parser/render-file "success.html" {:id (params :id)}))
+  (GET "/" 
+    [] 
+    (parser/render-file "index.html" {:forms (map #(get % :id) (db/get-forms))}))
+  (GET "/form/:id" 
+    [id] 
+    (parser/render-file "form.html" {:id id :registered (db/get-registed-names id) :token (util/anti-forgery-field)}))
+  (POST "/form/:id/register" 
+    {params :params} 
+    (db/add-registered (params :id) (params :name) (params :email)) (parser/render-file "success.html" {:id (params :id)}))
   (route/not-found "Not Found"))
 
 (def app
