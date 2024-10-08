@@ -7,9 +7,10 @@
   (ring/ring-handler
    (ring/router
     [["/" {:handler views/index}]
+     ["/add" {:handler views/test}]
      ["/form" 
       ["/:id" {:handler views/form}]
-      ["/:id/register" {:post {:handler views/test}}]]]) 
+      ["/:id/register" {:handler views/test}]]]) 
     (ring/create-default-handler
      {:not-found (constantly {:status 404 :body "Not found"})})))
 
