@@ -3,4 +3,5 @@ add timed forms
 (consider client side rendering with clojurescript)
 show name of form
 authentication
-ability to customize body when making form<
+ability to customize body when making form
+move templates to own directory, set template path relative to executable
