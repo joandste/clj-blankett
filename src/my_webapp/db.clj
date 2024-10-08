@@ -61,6 +61,8 @@
   (add-registered 69 "Oscar" "oscar@abo.fi")
   (get-registed-names 69)
   (get-all-registed)
+  (get-form 2)
+  (map #(get % :name) (get-form 2))
 
   (map #(get % :name) (get-all-forms))
   )

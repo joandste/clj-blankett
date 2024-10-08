@@ -6,4 +6,5 @@ authentication
 ability to customize body when making form
 move templates to own directory, set template path relative to executable
 (extend clojure to be able to grab values from keys in maps nested in a vector using macros)
-:D
+cleanup all the datastructures, especially the nesting in a vector when there is a single result, multi results can be cleaned using macros
+also learn to use macros :D (its a bit hard)

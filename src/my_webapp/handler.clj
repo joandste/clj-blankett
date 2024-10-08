@@ -17,7 +17,7 @@
   (GET "/form/:id" 
     [id] 
     (when (not-empty (db/get-form id) )
-    (parser/render-file "form.html" {:id id :registered (map #(get % :name) (db/get-registed-names id)) :token (util/anti-forgery-field)})))
+    (parser/render-file "form.html" {:id id :registered (map #(get % :name) (db/get-registed-names id)) :token (util/anti-forgery-field) :name ((first (db/get-form id)) :name)})))
   (POST "/form/:id/register" 
     {params :params} 
     (when (not-empty (db/get-form (params :id)))
@@ -38,4 +38,5 @@
   ;; evaluate this form to stop the webapp via the the REPL:
   (.stop server)
   ;; template path:
-  (selmer.parser/set-resource-path! "/home/user/clj-blankett/src/my_webapp"))
+  (selmer.parser/set-resource-path! "/home/user/clj-blankett/src/my_webapp")
+  (map #(get % :name) (db/get-form 2)))
