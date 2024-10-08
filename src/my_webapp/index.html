@@ -1,3 +1,10 @@
 {% for form in forms %}
     <a href="/form/{{form}}">Form {{form}}</a>
 {% endfor %}
+
+<form action="/add" method="post">
+    <label for="name">Namn:</label><br>
+    <input type="text" id="name" name="name" value="Date X Kleio"><br>
+    {{token|safe}}
+    <input type="submit" value="Lägg till blankett">
+  </form>

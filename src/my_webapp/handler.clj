@@ -10,7 +10,10 @@
 (defroutes app-routes
   (GET "/" 
     [] 
-    (parser/render-file "index.html" {:forms (map #(get % :id) (db/get-all-forms))}))
+    (parser/render-file "index.html" {:forms (map #(get % :id) (db/get-all-forms)) :token (util/anti-forgery-field)}))
+  (POST "/add" 
+    {params :params}
+    (db/add-form (params :name)) (parser/render-file "success_add.html" {}))
   (GET "/form/:id" 
     [id] 
     (when (not-empty (db/get-form id) )
@@ -18,7 +21,7 @@
   (POST "/form/:id/register" 
     {params :params} 
     (when (not-empty (db/get-form (params :id)))
-    (db/add-registered (params :id) (params :name) (params :email)) (parser/render-file "success.html" {:id (params :id)})))
+    (db/add-registered (params :id) (params :name) (params :email)) (parser/render-file "success_register.html" {:id (params :id)})))
   (route/not-found "Not Found"))
 
 (def app
