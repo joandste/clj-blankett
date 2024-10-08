@@ -32,7 +32,8 @@
   (jdbc/execute-one! db-spec ["
      create table forms (
      id int auto_increment primary key,
-     name varchar(32)
+     name varchar(32),
+     markdown varchar(4096)
      )
      "]))
 
