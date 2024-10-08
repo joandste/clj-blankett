@@ -38,5 +38,4 @@
   ;; evaluate this form to stop the webapp via the the REPL:
   (.stop server)
   ;; template path:
-  (selmer.parser/set-resource-path! "/home/user/clj-blankett/src/my_webapp")
-  (map #(get % :name) (db/get-form 2)))
+  (selmer.parser/set-resource-path! "/home/user/clj-blankett/src/my_webapp"))

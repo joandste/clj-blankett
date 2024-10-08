@@ -53,16 +53,6 @@
   (sql/query db-spec ["select name, from forms where id = ?" form] {:builder-fn rs/as-unqualified-lower-maps}))
 
 (comment 
-  (create-form-table)
-  (add-form "snopp")
-  (not-empty (get-form 19))
-  (create-registered-table)
-  (get-registed 69)
-  (add-registered 69 "Oscar" "oscar@abo.fi")
-  (get-registed-names 69)
-  (get-all-registed)
-  (get-form 2)
-  (map #(get % :name) (get-form 2))
-
-  (map #(get % :name) (get-all-forms))
-  )
+  ;; create the tables, for now database has to be created from the REPL, not very userfriendly :D
+  (create-form-table) 
+  (create-registered-table))
