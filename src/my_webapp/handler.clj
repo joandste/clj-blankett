@@ -1,32 +1,17 @@
 (ns my-webapp.handler
-  (:require [compojure.core :refer [defroutes GET POST]]
-            [compojure.route :as route]
-            [selmer.parser :as parser]
+  (:require [reitit.ring :as ring]
             [ring.adapter.jetty :as jetty]
-            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
-            [ring.util.anti-forgery :as util]
-            [my-webapp.db :as db]))
+            [my-webapp.views :as views]))
 
-(defroutes app-routes
-  (GET "/" 
-    [] 
-    (parser/render-file "index.html" {:forms (db/get-all-forms) :token (util/anti-forgery-field)}))
-  (POST "/add" 
-    {params :params}
-    (db/add-form (params :name)) (parser/render-file "success_add.html" {}))
-  (GET "/form/:id" 
-    [id] 
-    (when (not-empty (db/get-form id) )
-    (parser/render-file "form.html" {:id id :registered (db/get-registed id) :token (util/anti-forgery-field) :name ((first (db/get-form id)) :name)})))
-  (POST "/form/:id/register" 
-    {params :params} 
-    (when (not-empty (db/get-form (params :id)))
-    (db/add-registered (params :id) (params :name) (params :email)) (parser/render-file "success_register.html" {:id (params :id)})))
-  (route/not-found "Not Found"))
-
-(def app
-  ;; use #' prefix for REPL-friendly code
-  (wrap-defaults #'app-routes site-defaults))
+(def app 
+  (ring/ring-handler
+   (ring/router
+    [["/" {:handler views/index}]
+     ["/form" 
+      ["/:id" {:handler views/form}]
+      ["/:id/register" {:post {:handler views/test}}]]]) 
+    (ring/create-default-handler
+     {:not-found (constantly {:status 404 :body "Not found"})})))
 
 (defn -main []
   (jetty/run-jetty #'app {:port 3000}))
