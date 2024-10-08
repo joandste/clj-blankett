@@ -9,6 +9,8 @@
     <input type="submit" value="Skicka">
   </form>
 
-{% for name in registered %}
-  {{name}}
+<ul>
+{% for entry in registered %}
+  <li>{{entry.name}}</li>
 {% endfor %}
+</ul>

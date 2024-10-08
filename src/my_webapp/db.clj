@@ -7,15 +7,11 @@
 
 (defn get-registed
   [form]
-  (sql/query db-spec ["select name, email from registered where form = ?" form]))
+  (sql/query db-spec ["select name, email from registered where form = ?" form] {:builder-fn rs/as-unqualified-lower-maps}))
 
 (defn get-all-registed
   []
-  (sql/query db-spec ["select form, name, email from registered"]))
-
-(defn get-registed-names
-  [form]
-  (sql/query db-spec ["select name from registered where form = ?" form] {:builder-fn rs/as-unqualified-lower-maps}))
+  (sql/query db-spec ["select form, name, email from registered"] {:builder-fn rs/as-unqualified-lower-maps}))
 
 (defn add-registered
   [form name email]
@@ -55,4 +51,7 @@
 (comment 
   ;; create the tables, for now database has to be created from the REPL, not very userfriendly :D
   (create-form-table) 
-  (create-registered-table))
+  (create-registered-table)
+  ;; functions to view the database tables:
+  (get-all-registed)
+  (get-all-forms))

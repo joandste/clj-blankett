@@ -10,14 +10,14 @@
 (defroutes app-routes
   (GET "/" 
     [] 
-    (parser/render-file "index.html" {:forms (map #(get % :id) (db/get-all-forms)) :token (util/anti-forgery-field)}))
+    (parser/render-file "index.html" {:forms (db/get-all-forms) :token (util/anti-forgery-field)}))
   (POST "/add" 
     {params :params}
     (db/add-form (params :name)) (parser/render-file "success_add.html" {}))
   (GET "/form/:id" 
     [id] 
     (when (not-empty (db/get-form id) )
-    (parser/render-file "form.html" {:id id :registered (map #(get % :name) (db/get-registed-names id)) :token (util/anti-forgery-field) :name ((first (db/get-form id)) :name)})))
+    (parser/render-file "form.html" {:id id :registered (db/get-registed id) :token (util/anti-forgery-field) :name ((first (db/get-form id)) :name)})))
   (POST "/form/:id/register" 
     {params :params} 
     (when (not-empty (db/get-form (params :id)))

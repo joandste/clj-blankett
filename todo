@@ -5,6 +5,6 @@ show name of form
 authentication
 ability to customize body when making form
 move templates to own directory, set template path relative to executable
-(extend clojure to be able to grab values from keys in maps nested in a vector using macros)
-cleanup all the datastructures, especially the nesting in a vector when there is a single result, multi results can be cleaned using macros
-also learn to use macros :D (its a bit hard)
+learn 2 macros :D
+make unwrapping a sql response with one element more elegant (find way to never need to unwrap?)
+make utility to create database, so it doesn't have to be made from a REPL

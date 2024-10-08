@@ -1,6 +1,4 @@
-{% for form in forms %}
-    <a href="/form/{{form}}">Form {{form}}</a>
-{% endfor %}
+Blanketter
 
 <form action="/add" method="post">
     <label for="name">Namn:</label><br>
@@ -8,3 +6,9 @@
     {{token|safe}}
     <input type="submit" value="Lägg till blankett">
   </form>
+
+  <ul>
+    {% for form in forms %}
+      <li><a href="/form/{{form.id}}">{{form.name}}</a></li>
+    {% endfor %}
+</ul>
