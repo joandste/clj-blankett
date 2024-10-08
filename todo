@@ -10,3 +10,4 @@ make unwrapping a sql response with one element more elegant (find way to never 
 make utility to create database, so it doesn't have to be made from a REPL
 add markdown editor
 make more specific queries to reduce overhead (lmao doesnt make difference functional is already slow af :P)
+make docker work so that can scale horizontaly
