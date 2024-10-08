@@ -5,3 +5,4 @@ show name of form
 authentication
 ability to customize body when making form
 move templates to own directory, set template path relative to executable
+(extend clojure to be able to grab values from keys in maps nested in a vector using macros)<
