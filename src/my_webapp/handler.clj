@@ -1,6 +1,6 @@
 (ns my-webapp.handler
   (:require [reitit.ring :as ring]
-            [ring.adapter.jetty :as jetty]
+            [org.httpkit.server :refer [run-server]]
             [my-webapp.views :as views]))
 
 (def app 
@@ -15,12 +15,12 @@
      {:not-found (constantly {:status 404 :body "Not found"})})))
 
 (defn -main []
-  (jetty/run-jetty #'app {:port 3000}))
+  (run-server #'app {:port 3000}))
 
 (comment
   ;; evaluate this def form to start the webapp via the REPL:
   ;; :join? false runs the web server in the background!
-  (def server (jetty/run-jetty #'app {:port 3000 :join? false}))
+  (def server (run-server #'app {:port 3000 :join? false}))
   ;; evaluate this form to stop the webapp via the the REPL:
   (.stop server)
   ;; template path:
