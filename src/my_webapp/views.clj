@@ -8,17 +8,19 @@
   {:status 200
    :body (db/get-all-forms)})
 
-;; todo, add macro for getting id?
+;; todo, add macro for getting id? and caching inside a vector
 (defn form
-  [_]
+  [req]
   {:status 200
    :body (str form1)})
 
 (defn register
-  []
-  {})
+  [req]
+  {:status 200
+   :body (str req)})
 
 ;; test handler:
 (defn test
   [req]
-  {:status 200 :body (str req)})
+  {:status 200
+   :body (str req)})
