@@ -55,4 +55,6 @@
   (create-registered-table)
   ;; functions to view the database tables:
   (get-all-registed)
-  (get-all-forms))
+  (get-all-forms)
+  (add-form "bollar")
+  (add-registered 1 "stewu" "stewu@abo.fi"))
