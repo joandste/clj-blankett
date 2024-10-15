@@ -2,24 +2,24 @@
   (:require [reitit.ring :as ring]
             [reitit.ring.middleware.parameters :refer [parameters-middleware]]
             [org.httpkit.server :refer [run-server]]
-            [my-webapp.views :as views]))
+            [my-webapp.routes :as routes]))
 
 (def app 
   (ring/ring-handler
    (ring/router
     ["/api" [
              ["/listForms" {:get {
-                                  :handler views/index
+                                  :handler routes/list-forms
              }}] 
              ["/addForm" {:post { :middleware [parameters-middleware]
-                                 :handler views/add
+                                 :handler routes/add
                                  }}] 
              ["/form" [
                        ["/:id" {:get {
-                                      :handler views/form
+                                      :handler routes/form
                        }}] 
-                       ["/:id/register" {:get {
-                                               :handler views/test
+                       ["/:id/register" {:post { :middleware [parameters-middleware]
+                                               :handler routes/register
                        }}]
               ]]
       ]])
