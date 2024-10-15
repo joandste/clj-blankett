@@ -23,4 +23,4 @@
 (defn test
   [req]
   {:status 200
-   :body (str req)})
+   :body (str (req :params))})

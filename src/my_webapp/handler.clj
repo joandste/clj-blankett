@@ -1,6 +1,6 @@
 (ns my-webapp.handler
   (:require [reitit.ring :as ring]
-            [reitit.ring.middleware.parameters :refer (parameters-middleware)]
+            [reitit.ring.middleware.parameters :refer [parameters-middleware]]
             [org.httpkit.server :refer [run-server]]
             [my-webapp.views :as views]))
 
@@ -24,7 +24,9 @@
               ]]
       ]])
     (ring/create-default-handler
-     {:not-found (constantly {:status 404 :body "Not found"})})))
+     {:not-found (constantly {:status 404 :body "Not found"})})
+   {:middleware [parameters-middleware]}
+   ))
 
 (defn -main []
   (run-server #'app {:port 3000}))
