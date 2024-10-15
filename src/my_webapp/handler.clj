@@ -1,20 +1,28 @@
 (ns my-webapp.handler
   (:require [reitit.ring :as ring]
+            [reitit.ring.middleware.parameters :refer (parameters-middleware)]
             [org.httpkit.server :refer [run-server]]
             [my-webapp.views :as views]))
 
 (def app 
   (ring/ring-handler
    (ring/router
-    [["/api" [
-              ["/" {:handler views/index}]
-              ["/add" {:handler views/test}]
-              ["/form" [
-                        ["/:id" {:handler views/form}]
-                        ["/:id/register" {:handler views/test}]
-              ]] 
-      ]]
-     ["/hej" {:handler (fn [_] {:status 200 :body "hej"})}]]) 
+    ["/api" [
+             ["/listForms" {:get {
+                                  :handler views/index
+             }}] 
+             ["/addForm" {:post {
+                                 :handler views/test
+             }}] 
+             ["/form" [
+                       ["/:id" {:get {
+                                      :handler views/form
+                       }}] 
+                       ["/:id/register" {:get {
+                                               :handler views/test
+                       }}]
+              ]]
+      ]])
     (ring/create-default-handler
      {:not-found (constantly {:status 404 :body "Not found"})})))
 
