@@ -11,9 +11,9 @@
              ["/listForms" {:get {
                                   :handler views/index
              }}] 
-             ["/addForm" {:post {
-                                 :handler views/test
-             }}] 
+             ["/addForm" {:post { :middleware [parameters-middleware]
+                                 :handler views/add
+                                 }}] 
              ["/form" [
                        ["/:id" {:get {
                                       :handler views/form
@@ -25,7 +25,7 @@
       ]])
     (ring/create-default-handler
      {:not-found (constantly {:status 404 :body "Not found"})})
-   {:middleware [parameters-middleware]}
+   ;{:middleware [wrap-params]}
    ))
 
 (defn -main []

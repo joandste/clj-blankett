@@ -23,4 +23,10 @@
 (defn test
   [req]
   {:status 200
-   :body (str (req :params))})
+   :body (str req)})
+
+(defn add 
+  [request]
+  (let [params (:params request)]
+    {:status 200
+     :body (str "Received form data: " params)}))
