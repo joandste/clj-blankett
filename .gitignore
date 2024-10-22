@@ -25,3 +25,4 @@ pom.xml.asc
 .clj-kondo/imports
 my-db.mv.db
 my-db.trace.db
+out

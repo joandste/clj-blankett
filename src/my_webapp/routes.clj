@@ -1,31 +1,50 @@
 (ns my-webapp.routes
     (:require [my-webapp.db :as db]))
 
-(defn get-cached-form
+(def registered-users (atom {}))
+
+(def forms (atom []))
+
+(defn add-form
+  [name]
+  (swap! forms conj name))
+
+(defn get-registered
   [form]
-  ())
+  (get (deref registered-users) form))
+
+(defn add-registered
+  [form name email]
+  (swap! registered-users update form (fnil conj []) {:name name :email email}))
 
 (defn list-forms
   [_]
   {:status 200
-   :body (str all-forms)})
+   :body (deref forms)})
 
 (defn form
   [request]
-  {:status 200
-   :body (str form1)})
+  (let [form (Integer/parseInt (:id (:path-params request)))]
+    {:status 200
+     :body (get-registered form)}))
 
 (defn register
-  [request] 
-  (let [params (:params request)]
-  {:status 200
-   :body (do (db/add-registered 1 "stewu" "stewu@abo.fi") "succes")}))
+  [request]
+  (let [params (:params request)
+        form (Integer/parseInt (:id (:path-params request)))
+        name (get params "name")
+        email (get params "email")]
+    (add-registered form name email)
+    {:status 200
+     :body "success"}))
 
 (defn add
   [request]
-  (let [params (:params request)]
-    {:status 200
-     :body (str "Received form data: " params)}))
+(let [params (:params request)
+       name (get params "name")]
+   (add-form name)
+   {:status 200
+    :body "success"}))
 
 ;; test handler:
 (defn test
@@ -35,4 +54,13 @@
 
 (comment
   (def form1 (db/get-registed 1))
-  (def all-forms (db/get-all-forms)))
+  (def all-forms (db/get-all-forms))
+  (str (slurp registered-users))
+  (db/get-all-forms)
+  (deref registered-users)
+  (register 1 "joakim" "stewu@abo.fi")
+  (add-form "event 69")
+  (deref forms)
+  (get (deref registered-users) 1)
+  (Integer/parseInt "1")
+  (count (get-registered 1)))
