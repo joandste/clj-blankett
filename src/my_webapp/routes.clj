@@ -11,7 +11,7 @@
 
 (defn get-registered
   [form]
-  (get (deref registered-users) form))
+  (map #(get % :name) (get (deref registered-users) form)))
 
 (defn add-registered
   [form name email]
@@ -58,9 +58,10 @@
   (str (slurp registered-users))
   (db/get-all-forms)
   (deref registered-users)
-  (register 1 "joakim" "stewu@abo.fi")
+  (add-registered 1 "joakim" "stewu@abo.fi")
   (add-form "event 69")
   (deref forms)
   (get (deref registered-users) 1)
   (Integer/parseInt "1")
-  (count (get-registered 1)))
+  (count (get-registered 1))
+  (map #(get % :name) (get-registered 1)))

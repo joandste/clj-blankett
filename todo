@@ -2,6 +2,5 @@ add cljs frontend
 add timed forms
 authentication
 send markdown or html through multipart forms, also handle these in the backend
-(make utility to create database, so it doesn't have to be made from a REPL)
+tryout redis, performance should be compared to clojure datastructures (50 000 req/s)
 add markdown editor
-hold forms in a clojure datastructure and then dump to db (100x speedup!!! blazingly fast)
