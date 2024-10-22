@@ -30,13 +30,16 @@
 
 (defn register
   [request]
-  (let [params (:params request)
-        form (Integer/parseInt (:id (:path-params request)))
-        name (get params "name")
-        email (get params "email")]
-    (add-registered form name email)
+  (if (= 0 0)
+    (let [params (:params request)
+          form (Integer/parseInt (:id (:path-params request)))
+          name (get params "name")
+          email (get params "email")]
+      (add-registered form name email)
+      {:status 200
+       :body "success"})
     {:status 200
-     :body "success"}))
+     :body "form is not open yet"}))
 
 (defn add
   [request]
