@@ -4,6 +4,8 @@
             [org.httpkit.server :refer [run-server]]
             [my-webapp.routes :as routes]))
 
+
+;; Handler
 (def app 
   (ring/ring-handler
    (ring/router
@@ -25,9 +27,11 @@
       ]])
     (ring/create-default-handler
      {:not-found (constantly {:status 404 :body "Not found"})})
-   ;{:middleware [wrap-params]}
+   ;; {:middleware [wrap-params]}
    ))
 
+
+;; Entrypoint when run from jar
 (defn -main []
   (run-server #'app {:port 3000}))
 
