@@ -3,6 +3,7 @@
               [jsonista.core :as j]))
 
 
+;; TODO move all redis stuff to different namespace
 ;; redis connection
 (def redis-conn {:pool {} :spec {:uri "redis://localhost:6379"}})
 
@@ -18,9 +19,13 @@
   []
   (map Integer/parseInt (wcar* (car/lrange "form-ids" 0 -1))))
 
-(defn get-form
+(defn get-form-md
   [id]
-  (first (wcar* (car/lrange (str "form-id:" id) 0 -1))))
+  (first (wcar* (car/lrange (str "markdown-id:" id) 0 -1))))
+
+(defn get-form-info
+  [id]
+  (first (wcar* (car/lrange (str "info-id:" id) 0 -1))))
 
 (defn get-registered
   [id]
@@ -28,17 +33,22 @@
 
 (defn add-form-id
   [id]
-  (if (not (in? (get-form-ids) id))
+  (when (not (in? (get-form-ids) id))
     (wcar* (car/rpush "form-ids" id))))
 
-(defn add-form
-  [name date description id]
-  (if (in? (get-form-ids) id)
-    (wcar* (car/rpush (str "form-id:" id) {:name name :date date :description description :link id}))))
+(defn add-form-md
+  [id markdown]
+  (when (and (in? (get-form-ids) id) (empty? (get-form-info id)))
+    (wcar* (car/rpush (str "markdown-id:" id) markdown))))
+
+(defn add-form-info
+  [id title date description]
+  (when (and (in? (get-form-ids) id) (empty? (get-form-info id)))
+    (wcar* (car/rpush (str "info-id:" id) {:title title :date date :description description}))))
 
 (defn add-registered
   [id name email]
-  (if (in? (get-form-ids) id)
+  (when (in? (get-form-ids) id)
    (wcar* (car/rpush (str "registered-id:" id) {:name name :email email}))))
 
 
@@ -46,7 +56,7 @@
 (defn list-forms
   [_]
   {:status 200
-   :body (j/write-value-as-string (map get-form (get-form-ids)))})
+   :body (j/write-value-as-string (map get-form-info (get-form-ids)))})
 
 (defn form
   [request]
@@ -70,24 +80,16 @@
         date (get params "date")
         description (get params "description")
         id (rand-int 99999)]
-    (do (add-form-id id) (add-form name date description id)
+    (do (add-form-id id) (add-form-info id name date description)
     {:status 200})))
 
 
 ;; Testing
-(comment 
-  (add-registered 13217 "stewen" "stewu@abo.fi")
-  (add-form-id 13)
+(comment
   (get-form-ids)
-  (add-form "nalle partaj 3" "nov 13" "nalle bahia hos nalle och mycket partaj" 13)
-  (get-form 13217)
-  (get-registered 13217)
-
-  (wcar* (car/lrange "forms" 0 -1))
-  (wcar* (car/lrange (str "registered-users:" 1) 0 -1))
-  (count (get-registered 1))
-  (map #(get % :name) (get-registered 1))
-  (get-registered 12)
-  (map get-form (get-form-ids))
-  (get-form 12)
-  (slurp "index.html"))
+  (add-form-id 12)
+  (add-form-info 12 "nalle partaj" "nov 11" "bahia hos nalle")
+  (add-registered 12 "stewu" "stewu@abo.fi")
+  (map get-form-info (get-form-ids))
+  (map get-registered (get-form-ids))
+  )
