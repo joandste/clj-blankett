@@ -9,7 +9,7 @@
 (def app 
   (ring/ring-handler
    (ring/router
-    ["/api" [
+    [["/api" [
              ["/listForms" {:get {
                                   :handler routes/list-forms
              }}] 
@@ -24,9 +24,10 @@
                                                :handler routes/register
                        }}]
               ]]
-      ]])
+      ]]
+        ["/" {:get {:handler (fn [_] {:status 200 :body (slurp "index.html")})}}]])
     (ring/create-default-handler
-     {:not-found (constantly {:status 404 :body "Not found"})})
+     {:not-found (constantly {:status 404})})
    ;; {:middleware [wrap-params]}
    ))
 
@@ -38,4 +39,5 @@
 (comment
   ;; evaluate this def form to start the webapp via the REPL:
   ;; :join? false runs the web server in the background!
-  (def server (run-server #'app {:port 3000 :join? false})))
+  (def server (run-server #'app {:port 3000 :join? false}))
+  (slurp "index.html"))
