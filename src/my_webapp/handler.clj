@@ -40,4 +40,5 @@
   ;; evaluate this def form to start the webapp via the REPL:
   ;; :join? false runs the web server in the background!
   (def server (run-server #'app {:port 3000 :join? false}))
-  (slurp "index.html"))
+  (slurp "index.html")
+  )
