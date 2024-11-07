@@ -8,6 +8,7 @@
 
 
 ;; Functions for redis
+;; TODO add close-form
 (defn in?
   [coll value]
   (some #(= value %) coll))
@@ -24,10 +25,9 @@
   [id]
   (first (wcar* (car/lrange (str "info-id:" id) 0 -1))))
 
-(defn get-form-status
+(defn form-open?
   [id]
-  (when (= (first
-            (wcar* (car/lrange (str "status-id:" id) 0 -1)))
+  (when (= (wcar* (car/get (str "status-id:" id)))
            "open")
     true))
 
@@ -50,14 +50,19 @@
   (when (and (in? (get-form-ids) id) (empty? (get-form-info id)))
     (wcar* (car/rpush (str "info-id:" id) {:title title :date date :description description}))))
 
-(defn add-form-status-open
+(defn open-form
   [id]
-  (when (and (in? (get-form-ids) id) (not (get-form-status id)))
-    (wcar* (car/rpush (str "status-id:" id) "open"))))
+  (when (and (in? (get-form-ids) id) (not (form-open? id)))
+    (wcar* (car/set (str "status-id:" id) "open"))))
+
+(defn close-form
+  [id]
+  (when (and (in? (get-form-ids) id) (form-open? id))
+    (wcar* (car/set (str "status-id:" id) "closed"))))
 
 (defn add-registered
   [id name email]
-  (when (and (in? (get-form-ids) id) (get-form-status id))
+  (when (form-open? id)
    (wcar* (car/rpush (str "registered-id:" id) {:name name :email email}))))
 
 
@@ -71,6 +76,7 @@
   (map get-form-info (get-form-ids))
   (map get-registered (get-form-ids))
   (get-form-info 12)
-  (get-form-status 12)
-  (add-form-status-open 12)
+  (form-open? 12)
+  (open-form 12)
+  (close-form 12)
   )
