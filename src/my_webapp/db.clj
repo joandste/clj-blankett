@@ -11,7 +11,7 @@
 
 
 
-;; Functions for redis
+;; Functions for checking
 (defn datetime-passed? [year month day hour minute]
   (let [now (LocalDateTime/now)
         specified-datetime (LocalDateTime/of year month day hour minute)]
@@ -23,6 +23,7 @@
 
 
 
+;; functions for getting form data
 (defn get-form-ids
   []
   (map Integer/parseInt (wcar* (car/lrange "form-ids" 0 -1))))
@@ -41,10 +42,14 @@
 
 (defn form-open?
   [id]
-  (apply datetime-passed? (map Integer/parseInt (clojure.string/split (get-form-date id) #" "))))
+  (if (= (wcar* (car/get (str "form-open-" id))) "open")
+    true
+   (when (apply datetime-passed? (map Integer/parseInt (clojure.string/split (get-form-date id) #" ")))
+     (do (wcar* (car/set (str "form-open-" id) "open")) true))))
 
 
 
+;; functions for adding and setting form data
 (defn add-form-id
   [id]
   (when (not (in? (get-form-ids) id))
@@ -67,27 +72,29 @@
 
 
 
+;; registered users data
 (defn get-registered
   [id]
-  (wcar* (car/lrange (str "registered-id:" id) 0 -1)))
+  (wcar* (car/lrange (str "form-registered-" id) 0 -1)))
 
 (defn add-registered
   [id name email]
   (when (and (in? (get-form-ids) id) (form-open? id))
-   (wcar* (car/rpush (str "registered-id:" id) {:name name :email email}))))
+   (wcar* (car/rpush (str "form-registered-" id) {:name name :email email}))))
 
 
 
 ;; Testing
 (comment
   (get-form-ids)
-  (add-form-id 69)
-  (set-form-title 69 "nalle partaj 2")
-  (set-form-date 69 "2024 11 8 2 30")
-  (get-form-date 12)
-  (add-registered 12 "stewu" "stewu@abo.fi")
-  (count (get-registered 12))
-  (get-registered 12)
+  (add-form-id 15)
+  (set-form-title 15 "nalle partaj 2")
+  (set-form-date 15 "2024 11 8 5 52")
+  (get-form-date 15)
+  (time (form-open? 15))
+  (add-registered 15 "stewu" "stewu@abo.fi")
+  (count (get-registered 15))
+  (get-registered 15)
   (get-form-date 12)
   (map get-form-md (get-form-ids))
   (map get-registered (get-form-ids))
