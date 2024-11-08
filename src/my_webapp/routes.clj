@@ -7,7 +7,7 @@
 (defn list-forms
   [_]
   {:status 200
-   :body (j/write-value-as-string (map #(assoc (db/get-form-info %) :id %) (db/get-form-ids)))})
+   :body (j/write-value-as-string (map (fn [id] {:title (db/get-form-title id) :date (db/get-form-date id)}) (db/get-form-ids)))})
 
 (defn form
   [request]

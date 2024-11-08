@@ -1,5 +1,8 @@
 (ns my-webapp.db
-  (:require [taoensso.carmine :as car]))
+  (:require [taoensso.carmine :as car])
+  (:import [java.time LocalDateTime]))
+
+
 
 ;; redis connection
 (def redis-conn {:pool {} :spec {:uri "redis://localhost:6379"}})
@@ -7,11 +10,18 @@
 (defmacro wcar* [& body] `(car/wcar redis-conn ~@body))
 
 
+
 ;; Functions for redis
-;; TODO add close-form
+(defn datetime-passed? [year month day hour minute]
+  (let [now (LocalDateTime/now)
+        specified-datetime (LocalDateTime/of year month day hour minute)]
+    (.isAfter now specified-datetime)))
+
 (defn in?
   [coll value]
   (some #(= value %) coll))
+
+
 
 (defn get-form-ids
   []
@@ -19,64 +29,67 @@
 
 (defn get-form-md
   [id]
-  (first (wcar* (car/lrange (str "markdown-id:" id) 0 -1))))
+  (wcar* (car/get (str "form-markdown-" id))))
 
-(defn get-form-info
+(defn get-form-title
   [id]
-  (first (wcar* (car/lrange (str "info-id:" id) 0 -1))))
+  (wcar* (car/get (str "form-title-" id))))
+
+(defn get-form-date
+  [id]
+  (wcar* (car/get (str "form-date-" id))))
 
 (defn form-open?
   [id]
-  (when (= (wcar* (car/get (str "status-id:" id)))
-           "open")
-    true))
+  (apply datetime-passed? (map Integer/parseInt (clojure.string/split (get-form-date id) #" "))))
 
-(defn get-registered
-  [id]
-  (wcar* (car/lrange (str "registered-id:" id) 0 -1)))
+
 
 (defn add-form-id
   [id]
   (when (not (in? (get-form-ids) id))
     (wcar* (car/rpush "form-ids" id))))
 
-(defn add-form-md
+(defn set-form-md
   [id markdown]
-  (when (and (in? (get-form-ids) id) (empty? (get-form-info id)))
-    (wcar* (car/rpush (str "markdown-id:" id) markdown))))
+  (when (in? (get-form-ids) id)
+    (wcar* (car/set (str "form-markdown" id) markdown))))
 
-(defn add-form-info
-  [id title date description]
-  (when (and (in? (get-form-ids) id) (empty? (get-form-info id)))
-    (wcar* (car/rpush (str "info-id:" id) {:title title :date date :description description}))))
+(defn set-form-title
+  [id title]
+  (when (in? (get-form-ids) id)
+    (wcar* (car/set (str "form-title-" id) title))))
 
-(defn open-form
+(defn set-form-date
+  [id date]
+    (when (in? (get-form-ids) id)
+     (wcar* (car/set (str "form-date-" id) date))))
+
+
+
+(defn get-registered
   [id]
-  (when (and (in? (get-form-ids) id) (not (form-open? id)))
-    (wcar* (car/set (str "status-id:" id) "open"))))
-
-(defn close-form
-  [id]
-  (when (and (in? (get-form-ids) id) (form-open? id))
-    (wcar* (car/set (str "status-id:" id) "closed"))))
+  (wcar* (car/lrange (str "registered-id:" id) 0 -1)))
 
 (defn add-registered
   [id name email]
-  (when (form-open? id)
+  (when (and (in? (get-form-ids) id) (form-open? id))
    (wcar* (car/rpush (str "registered-id:" id) {:name name :email email}))))
+
 
 
 ;; Testing
 (comment
   (get-form-ids)
-  (add-form-id 12)
-  (add-form-info 12 "nalle partaj" "nov 11" "bahia hos nalle")
+  (add-form-id 69)
+  (set-form-title 69 "nalle partaj 2")
+  (set-form-date 69 "2024 11 8 2 30")
+  (get-form-date 12)
   (add-registered 12 "stewu" "stewu@abo.fi")
+  (count (get-registered 12))
   (get-registered 12)
-  (map get-form-info (get-form-ids))
+  (get-form-date 12)
+  (map get-form-md (get-form-ids))
   (map get-registered (get-form-ids))
-  (get-form-info 12)
-  (form-open? 12)
-  (open-form 12)
-  (close-form 12)
+  (time (form-open? 12))
   )

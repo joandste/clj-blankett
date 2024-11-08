@@ -25,10 +25,9 @@
                        }}]
               ]]
       ]]
-        ["/" {:get {:handler (fn [_] {:status 200 :body (slurp "index.html")})}}]])
+     ["/test" {:get {:handler (fn [_] {:status 200 :body "hej"})}}]])
     (ring/create-default-handler
      {:not-found (constantly {:status 404})})
-   ;; {:middleware [wrap-params]}
    ))
 
 
@@ -40,5 +39,4 @@
   ;; evaluate this def form to start the webapp via the REPL:
   ;; :join? false runs the web server in the background!
   (def server (run-server #'app {:port 3000 :join? false}))
-  (slurp "index.html")
   )
