@@ -1,19 +1,21 @@
 (ns my-webapp.routes
   (:require [jsonista.core :as j]
-            [my-webapp.db :as db]))
+            [my-webapp.db :as db]
+            [hiccup2.core :as h]))
+
 
 
 ;; Route functions
 (defn list-forms
   [_]
   {:status 200
-   :body (j/write-value-as-string (map (fn [id] {:title (db/get-form-title id) :date (db/get-form-date id)}) (db/get-form-ids)))})
+   :body (str (h/html (map (fn [id] (list [:h1 (db/get-form-title id)] [:a (db/get-form-date id)])) (db/get-form-ids))))})
 
 (defn form
   [request]
   (let [form (Integer/parseInt (:id (:path-params request)))]
     {:status 200
-     :body (j/write-value-as-string (map #(:name %) (db/get-registered form)))}))
+     :body (str (h/html (map (fn [input] [:li (:name input)]) (db/get-registered form))))}))
 
 (defn register
   [request]
@@ -31,5 +33,5 @@
         date (get params "date")
         description (get params "description")
         id (rand-int 99999)]
-    (do (db/add-form-id id) (db/add-form-info id name date description)
+    (do (db/add-form-id id)
     {:status 200})))
