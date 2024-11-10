@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-control" content="private">
   <title>Attendees List & Registration</title>
+  <script src="https://unpkg.com/htmx.org"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -30,57 +32,30 @@
 </head>
 <body>
 
-  <h2>Register</h2>
-  <!-- Registration Form -->
-  <form action="/api/13217/register" method="POST">
-    <label for="name">Name:</label>
-    <input type="text" id="name" name="name" required>
-    
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required>
-    
-    <button type="submit">Register</button>
-  </form>
+    <h1>Register</h1>
+    <!-- Registration Form -->
+    <form action="/api/15/register" method="POST" hx-post="/api/15/register" hx-swap="none">
+      <label for="name">Name:</label>
+      <input type="text" id="name" name="name" required>
+      
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required>
+      
+      <button type="submit">Register</button>
+    </form>
 
-  <h1>Attendees</h1>
-  <ul id="attendees">
-    <!-- Attendees will be displayed here by JavaScript -->
+  <h2>Attendees</h2>
+  <!-- Attendee list loaded with HTMX -->
+  <ul id="attendees" 
+      hx-get="api/form/15" 
+      hx-trigger="load" 
+      hx-target="#attendees" 
+      hx-swap="innerHTML">
+    <!-- The attendee list will be dynamically loaded here -->
   </ul>
 
-  <script>
-    // Endpoint to get the attendee list
-    const attendeesUrl = '/api/form/13217';
-
-    // Function to fetch attendees and render them on the page
-    async function fetchAttendees() {
-      try {
-        const response = await fetch(attendeesUrl);
-        if (!response.ok) throw new Error(`Error: ${response.statusText}`);
-        
-        // Assuming the response is a JSON array of attendee names
-        const attendees = await response.json();
-
-        // Get the attendees list element
-        const attendeesList = document.getElementById("attendees");
-
-        // Clear any previous entries
-        attendeesList.innerHTML = '';
-
-        // Add each attendee as a list item
-        attendees.forEach((attendee) => {
-          const listItem = document.createElement("li");
-          listItem.className = "attendee";
-          listItem.textContent = attendee;
-          attendeesList.appendChild(listItem);
-        });
-      } catch (error) {
-        console.error("Failed to fetch attendees:", error);
-      }
-    }
-
-    // Fetch attendees when the page loads
-    fetchAttendees();
-  </script>
+  <!-- Button to refresh the attendee list -->
+  <div hx-get="/api/form/15" hx-target="#attendees" hx-swap="innerHTML" hx-trigger="every 10s"></div>
 
 </body>
 </html>

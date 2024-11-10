@@ -25,7 +25,7 @@
                        }}]
               ]]
       ]]
-     ["/test" {:get {:handler (fn [_] {:status 200 :body "hej"})}}]])
+     ["/test" {:get {:handler (fn [_] {:status 200 :body (slurp "index.html")})}}]])
     (ring/create-default-handler
      {:not-found (constantly {:status 404})})
    ))
